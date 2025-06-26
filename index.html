@@ -161,6 +161,56 @@
       text-align: center;
       padding: 2rem 1rem;
     }
+
+    .crypto-section {
+      margin-top: 2.5rem;
+      text-align: center;
+      animation: fadeInUp 0.6s ease-out both;
+    }
+
+    .crypto-title {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+      color: #888;
+    }
+
+    .crypto-link {
+      display: inline-block;
+      padding: 0.9rem 1.6rem;
+      background-color: #4c6ef5;
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 50px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .crypto-link:hover {
+      background-color: #364fc7;
+      transform: scale(1.07);
+    }
+
+    .test-btn {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.95rem;
+      font-weight: bold;
+      background-color: #ffb347;
+      color: #222;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .test-btn:hover {
+      background-color: #e79a26;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -178,6 +228,15 @@
     <label for="donation-amount">Importo (€):</label><br>
     <input type="number" id="donation-amount" min="1" step="0.50" value="1.00"><br><br>
     <div id="paypal-button-container"></div>
+
+    <!-- Sezione donazione crypto -->
+    <div class="crypto-section">
+      <h3 class="crypto-title">💱 Vuoi usare crypto valute? Clicca qui sotto</h3>
+      <a href="#" onclick="handleCryptoDonation()" class="crypto-link">
+        🪙 Dona in Crypto
+      </a><br>
+      <button class="test-btn" onclick="simulaDonazioneCrypto()">🧪 Simula Donazione Crypto</button>
+    </div>
   </div>
 
   <script>
@@ -265,6 +324,18 @@
           confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
         }, 250);
       }, 300);
+    }
+
+    function handleCryptoDonation() {
+      const amount = document.getElementById('donation-amount').value || '1.00';
+      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.sendData) {
+        Telegram.WebApp.sendData(`Donazione crypto avviata per €${amount}`);
+      }
+      window.open("https://commerce.coinbase.com/checkout/fd104c5d-2cf9-45e5-bb1f-042861b319f1", "_blank");
+    }
+
+    function simulaDonazioneCrypto() {
+      handleDonation("Mario (Crypto)", document.getElementById('donation-amount').value);
     }
   </script>
 </body>
