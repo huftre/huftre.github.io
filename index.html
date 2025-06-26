@@ -2,8 +2,33 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Supporta lo sviluppo</title>
   <script src="https://www.paypal.com/sdk/js?client-id=AVVbNYQPzbIbyXEY4KfGcBoHBPxkF4TMb_oq4X2dmvQ6s8xviEnj_T991er3rPUU5isq037ea7WHbP9h&currency=EUR"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 2rem 1rem;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+
+    #paypal-button-container {
+      max-width: 320px;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
   <h2>Grazie per il tuo supporto! 💖</h2>
@@ -16,8 +41,13 @@
       }),
       onApprove: (data, actions) => actions.order.capture().then(details => {
         Telegram.WebApp.sendData("Donazione da " + details.payer.name.given_name);
+        document.body.innerHTML = `
+          <h2>Grazie, ${details.payer.name.given_name}! 💖</h2>
+          <p>La tua donazione è stata ricevuta con successo.</p>
+        `;
       })
     }).render('#paypal-button-container');
   </script>
 </body>
 </html>
+
