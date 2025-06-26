@@ -17,11 +17,19 @@
 
     h2 {
       font-size: 1.6rem;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
     }
 
-    p {
+    label {
+      font-weight: bold;
+    }
+
+    input {
+      padding: 0.5rem;
       font-size: 1rem;
+      width: 100px;
+      text-align: center;
+      margin-bottom: 1rem;
     }
 
     #paypal-button-container {
@@ -32,22 +40,28 @@
 </head>
 <body>
   <h2>Grazie per il tuo supporto! 💖</h2>
+  <label for="donation-amount">Importo (€):</label><br>
+  <input type="number" id="donation-amount" min="1" step="0.50" value="5.00"><br><br>
+
   <div id="paypal-button-container"></div>
 
   <script>
     paypal.Buttons({
-      createOrder: (data, actions) => actions.order.create({
-        purchase_units: [{ amount: { value: '5.00' } }]
-      }),
+      createOrder: (data, actions) => {
+        const amount = document.getElementById('donation-amount').value || '5.00';
+        return actions.order.create({
+          purchase_units: [{ amount: { value: amount } }]
+        });
+      },
       onApprove: (data, actions) => actions.order.capture().then(details => {
-        Telegram.WebApp.sendData("Donazione da " + details.payer.name.given_name);
+        const amount = document.getElementById('donation-amount').value;
+        Telegram.WebApp.sendData(`Donazione di €${amount} da ${details.payer.name.given_name}`);
         document.body.innerHTML = `
           <h2>Grazie, ${details.payer.name.given_name}! 💖</h2>
-          <p>La tua donazione è stata ricevuta con successo.</p>
+          <p>Hai donato €${amount}. La tua donazione è stata ricevuta con successo.</p>
         `;
       })
     }).render('#paypal-button-container');
   </script>
 </body>
 </html>
-
