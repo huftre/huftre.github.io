@@ -32,9 +32,24 @@
       margin-bottom: 1rem;
     }
 
-    #paypal-button-container {
+    #paypal-button-container, #test-button {
       max-width: 320px;
       margin: 0 auto;
+    }
+
+    button {
+      padding: 0.7rem 1.2rem;
+      font-size: 1rem;
+      margin-top: 1rem;
+      background-color: #0070ba;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005c99;
     }
   </style>
 </head>
@@ -44,6 +59,23 @@
   <input type="number" id="donation-amount" min="1" step="0.50" value="5.00"><br><br>
 
   <div id="paypal-button-container"></div>
+
+  <!-- INIZIO BLOCCO TEST: Simula Donazione -->
+  <div id="test-button">
+    <button onclick="simulaDonazione()">Simula Donazione</button>
+  </div>
+  <script>
+    function simulaDonazione() {
+      const amount = document.getElementById('donation-amount').value;
+      const nomeFittizio = "Mario"; // Nome simulato
+      Telegram.WebApp.sendData(`Donazione di €${amount} da ${nomeFittizio}`);
+      document.body.innerHTML = `
+        <h2>Grazie, ${nomeFittizio}! 💖</h2>
+        <p>Hai donato €${amount}. La tua donazione è stata ricevuta con successo (simulazione).</p>
+      `;
+    }
+  </script>
+  <!-- FINE BLOCCO TEST -->
 
   <script>
     paypal.Buttons({
@@ -65,3 +97,4 @@
   </script>
 </body>
 </html>
+
