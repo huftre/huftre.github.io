@@ -239,104 +239,100 @@
     </div>
   </div>
 
-  <script>
-    function setTheme(mode) {
-      localStorage.setItem("theme", mode);
-      applyTheme();
-    }
-
-    function applyTheme() {
-      const mode = localStorage.getItem("theme") || "auto";
-      document.body.classList.remove("light", "dark");
-      document.getElementById("btn-light").classList.remove("active");
-      document.getElementById("btn-dark").classList.remove("active");
-      document.getElementById("btn-auto").classList.remove("active");
-
-      if (mode === "light") {
-        document.body.classList.add("light");
-        document.getElementById("btn-light").classList.add("active");
-      } else if (mode === "dark") {
-        document.body.classList.add("dark");
-        document.getElementById("btn-dark").classList.add("active");
-      } else {
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        document.body.classList.add(prefersDark ? "dark" : "light");
-        document.getElementById("btn-auto").classList.add("active");
-      }
-    }
-
+<script>
+  function setTheme(mode) {
+    localStorage.setItem("theme", mode);
     applyTheme();
+  }
 
-    paypal.Buttons({
-      createOrder: (data, actions) => {
-        const amount = document.getElementById('donation-amount').value || '1.00';
-        return actions.order.create({
-          purchase_units: [{ amount: { value: amount } }]
-        });
-      },
-      onApprove: (data, actions) => actions.order.capture().then(details => {
-        const name = details.payer.name.given_name;
-        const amount = document.getElementById('donation-amount').value;
-        handleDonation(name, amount);
-      })
-    }).render('#paypal-button-container');
+  function applyTheme() {
+    const mode = localStorage.getItem("theme") || "auto";
+    document.body.classList.remove("light", "dark");
+    document.getElementById("btn-light").classList.remove("active");
+    document.getElementById("btn-dark").classList.remove("active");
+    document.getElementById("btn-auto").classList.remove("active");
 
-    function handleDonation(name, amount) {
-      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.sendData) {
-        Telegram.WebApp.sendData(`Donazione di €${amount} da ${name}`);
-      }
-
-      document.getElementById('main-content').style.display = 'none';
-
-      const thankyouBlock = document.createElement('div');
-      thankyouBlock.className = 'thankyou';
-      thankyouBlock.innerHTML = `
-        <h2>Grazie, ${name}! 💖</h2>
-        <p>Hai donato €${amount}. La tua donazione è stata ricevuta con successo.</p>
-        <a href="https://linktr.ee/ricknride_85cc" target="_blank" class="social-link">
-          🌐 Scopri tutti i miei social
-        </a><br><br>
-        <button id="close-btn" class="close-btn" style="display: none;">🚪 Chiudi</button>
-      `;
-      document.body.appendChild(thankyouBlock);
-
-      const closeBtn = document.getElementById('close-btn');
-      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.close) {
-        closeBtn.style.display = 'inline-block';
-        closeBtn.addEventListener('click', () => Telegram.WebApp.close());
-      }
-
-      setTimeout(() => {
-        const duration = 15000;
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-        function randomInRange(min, max) {
-          return Math.random() * (max - min) + min;
-        }
-
-        const interval = setInterval(() => {
-          const timeLeft = animationEnd - Date.now();
-          if (timeLeft <= 0) return clearInterval(interval);
-
-          const particleCount = 50 * (timeLeft / duration);
-          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-        }, 250);
-      }, 300);
+    if (mode === "light") {
+      document.body.classList.add("light");
+      document.getElementById("btn-light").classList.add("active");
+    } else if (mode === "dark") {
+      document.body.classList.add("dark");
+      document.getElementById("btn-dark").classList.add("active");
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.body.classList.add(prefersDark ? "dark" : "light");
+      document.getElementById("btn-auto").classList.add("active");
     }
+  }
 
-    function handleCryptoDonation() {
+  applyTheme();
+
+  paypal.Buttons({
+    createOrder: (data, actions) => {
       const amount = document.getElementById('donation-amount').value || '1.00';
-      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.sendData) {
-        Telegram.WebApp.sendData(`Donazione crypto avviata per €${amount}`);
-      }
-      window.open("https://commerce.coinbase.com/checkout/fd104c5d-2cf9-45e5-bb1f-042861b319f1", "_blank");
+      return actions.order.create({
+        purchase_units: [{ amount: { value: amount } }]
+      });
+    },
+    onApprove: (data, actions) => actions.order.capture().then(details => {
+      const name = details.payer.name?.given_name || "chiunque tu sia";
+      const amount = document.getElementById('donation-amount').value;
+      handleDonation(name, amount);
+    })
+  }).render('#paypal-button-container');
+
+  function handleDonation(name, amount) {
+    if (window.Telegram && Telegram.WebApp && Telegram.WebApp.sendData) {
+      Telegram.WebApp.sendData(`Donazione di €${amount} da ${name}`);
     }
 
-    function simulaDonazioneCrypto() {
-      handleDonation("Mario (Crypto)", document.getElementById('donation-amount').value);
+    document.getElementById('main-content').style.display = 'none';
+
+    const thankyouBlock = document.createElement('div');
+    thankyouBlock.className = 'thankyou';
+    thankyouBlock.innerHTML = `
+      <h2>Grazie, ${name}! 💖</h2>
+      <p>Hai donato €${amount}. La tua donazione è stata ricevuta con successo.</p>
+      <a href="https://linktr.ee/ricknride_85cc" target="_blank" class="social-link">
+        🌐 Scopri tutti i miei social
+      </a><br><br>
+      <button id="close-btn" class="close-btn" style="display: none;">🚪 Chiudi</button>
+    `;
+    document.body.appendChild(thankyouBlock);
+
+    const closeBtn = document.getElementById('close-btn');
+    if (window.Telegram && Telegram.WebApp && Telegram.WebApp.close) {
+      closeBtn.style.display = 'inline-block';
+      closeBtn.addEventListener('click', () => Telegram.WebApp.close());
     }
-  </script>
+
+    setTimeout(() => {
+      const duration = 15000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const interval = setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) return clearInterval(interval);
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+      }, 250);
+    }, 300);
+  }
+
+  function handleCryptoDonation() {
+    const amount = document.getElementById('donation-amount').value || '1.00';
+    if (window.Telegram && Telegram.WebApp && Telegram.WebApp.sendData) {
+      Telegram.WebApp.sendData(`Donazione crypto avviata per €${amount}`);
+    }
+    window.open("https://commerce.coinbase.com/checkout/fd104c5d-2cf9-45e5-bb1f-042861b319f1", "_blank");
+  }
+</script>
 </body>
 </html>
