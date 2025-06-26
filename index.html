@@ -241,12 +241,12 @@
       `;
       document.body.appendChild(thankyouBlock);
 
-      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.close) {
-        const closeBtn = document.getElementById('close-btn');
-        closeBtn.style.display = 'inline-block';
-        closeBtn.classList.add('animated');
-        closeBtn.addEventListener('click', () => Telegram.WebApp.close());
-      }
+      const closeBtn = document.getElementById('close-btn');
+if (window.Telegram && Telegram.WebApp && Telegram.WebApp.close) {
+  closeBtn.style.display = 'inline-block';
+  closeBtn.addEventListener('click', () => Telegram.WebApp.close());
+}
+
 
       setTimeout(() => {
         const duration = 15 * 1000;
