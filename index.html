@@ -66,14 +66,19 @@
   </div>
   <script>
     function simulaDonazione() {
-      const amount = document.getElementById('donation-amount').value;
-      const nomeFittizio = "Mario"; // Nome simulato
-      Telegram.WebApp.sendData(`Donazione di €${amount} da ${nomeFittizio}`);
-      document.body.innerHTML = `
-        <h2>Grazie, ${nomeFittizio}! 💖</h2>
-        <p>Hai donato €${amount}. La tua donazione è stata ricevuta con successo (simulazione).</p>
-      `;
-    }
+  const amount = document.getElementById('donation-amount').value;
+  const nomeFittizio = "Mario"; // Nome simulato
+
+  if (typeof Telegram !== "undefined" && Telegram.WebApp && Telegram.WebApp.sendData) {
+    Telegram.WebApp.sendData(`Donazione di €${amount} da ${nomeFittizio}`);
+  }
+
+  document.body.innerHTML = `
+    <h2>Grazie, ${nomeFittizio}! 💖</h2>
+    <p>Hai donato €${amount}. La tua donazione è stata ricevuta con successo (simulazione).</p>
+  `;
+}
+
   </script>
   <!-- FINE BLOCCO TEST -->
 
