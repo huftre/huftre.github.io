@@ -128,7 +128,7 @@
       margin: 0 auto;
     }
 
-    .social-link {
+    .social-link, .test-btn, .close-btn {
       display: inline-block;
       margin-top: 1.5rem;
       padding: 0.8rem 1.2rem;
@@ -139,14 +139,17 @@
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
+      cursor: pointer;
     }
 
-    .social-link:hover {
+    .social-link:hover,
+    .test-btn:hover,
+    .close-btn:hover {
       background-color: #e73370;
       transform: scale(1.05);
     }
 
-    .thankyou {
+    .thankyou, .close-btn.animated {
       animation: fadeInUp 0.6s ease-out both;
       text-align: center;
       padding: 2rem 1rem;
@@ -168,6 +171,8 @@
     <label for="donation-amount">Importo (€):</label><br>
     <input type="number" id="donation-amount" min="1" step="0.50" value="1.00"><br><br>
     <div id="paypal-button-container"></div>
+    <!-- 🔧 Pulsante test donazione -->
+    <button class="test-btn" onclick="simulaDonazione()">💡 Simula Donazione</button>
   </div>
 
   <script>
@@ -207,15 +212,61 @@
         });
       },
       onApprove: (data, actions) => actions.order.capture().then(details => {
-        const amount = document.getElementById('donation-amount').value;
         const name = details.payer.name.given_name;
+        const amount = document.getElementById('donation-amount').value;
+        handleDonation(name, amount);
+      })
+    }).render('#paypal-button-container');
 
-        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.sendData) {
-          Telegram.WebApp.sendData(`Donazione di €${amount} da ${name}`);
+    function simulaDonazione() {
+      handleDonation("Mario", document.getElementById('donation-amount').value);
+    }
+
+    function handleDonation(name, amount) {
+      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.sendData) {
+        Telegram.WebApp.sendData(`Donazione di €${amount} da ${name}`);
+      }
+
+      document.getElementById('main-content').style.display = 'none';
+
+      const thankyouBlock = document.createElement('div');
+      thankyouBlock.className = 'thankyou';
+      thankyouBlock.innerHTML = `
+        <h2>Grazie, ${name}! 💖</h2>
+        <p>Hai donato €${amount}. La tua donazione è stata ricevuta con successo.</p>
+        <a href="https://linktr.ee/ricknride_85cc" target="_blank" class="social-link">
+          🌐 Scopri tutti i miei social
+        </a><br><br>
+        <button id="close-btn" class="close-btn" style="display: none;">🚪 Chiudi</button>
+      `;
+      document.body.appendChild(thankyouBlock);
+
+      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.close) {
+        const closeBtn = document.getElementById('close-btn');
+        closeBtn.style.display = 'inline-block';
+        closeBtn.classList.add('animated');
+        closeBtn.addEventListener('click', () => Telegram.WebApp.close());
+      }
+
+      setTimeout(() => {
+        const duration = 15 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
         }
 
-        document.body.innerHTML = `
-          <div class="thankyou">
-            <h2>Grazie, ${name}! 💖</h2>
-            <p>Hai donato €${amount}. La tua donazione è stata ricevuta con successo.</p>
-            <a href="https://linktr.ee/ricknride_85cc"
+        const interval = setInterval(() => {
+          const timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) return clearInterval(interval);
+
+          const particleCount = 50 * (timeLeft / duration);
+          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+        }, 250);
+      }, 300);
+    }
+  </script>
+</body>
+</html>
